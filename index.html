@@ -34,7 +34,8 @@
     // Function to read "cid" from URL query string
     function getQueryParam(name) {
       const params = new URLSearchParams(window.location.search);
-      return params.get(name);
+      const value = params.get(name);
+      return value ? value.trim() : null;
     }
 
     const cid = getQueryParam('cid');
