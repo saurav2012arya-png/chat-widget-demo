@@ -5,11 +5,10 @@
   <title>Chat Widget Demo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Styles -->
   <style>
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: linear-gradient(135deg, #667eea, #764ba2);
       color: white;
       display: flex;
@@ -19,56 +18,56 @@
       min-height: 100vh;
       text-align: center;
     }
-    h1 {
-      font-size: 3rem;
-      margin-bottom: 20px;
-    }
-    p {
-      font-size: 1.2rem;
-      max-width: 600px;
-    }
+    h1 { font-size: 3rem; margin-bottom: 20px; }
+    p { font-size: 1.2rem; max-width: 600px; opacity: 0.9; }
+    .status-box { margin-top: 20px; padding: 10px; border: 1px solid rgba(255,255,255,0.3); border-radius: 8px; font-family: monospace; }
   </style>
 
-  <!-- Genesys Chat Widget with dynamic cid -->
   <script type="text/javascript">
-    // Function to read "cid" from URL query string
-    function getQueryParam(name) {
-      const params = new URLSearchParams(window.location.search);
-      const value = params.get(name);
-      return value ? value.trim() : null;
-    }
-
-    const cid = getQueryParam('cid');
-
     (function (g, e, n, es, ys) {
       g['_genesysJs'] = e;
       g[e] = g[e] || function () { (g[e].q = g[e].q || []).push(arguments) };
       g[e].t = 1 * new Date();
       g[e].c = es;
-
-      // Safely push the cid command into Genesys queue
-      if(cid) {
-        g[e]("command", "Database.set", {
-          messaging: { customAttributes: { cid: cid },
-                      preEngagement: true
-                     }
-        });
-      }
-
-      ys = document.createElement('script'); 
-      ys.async = 1; 
-      ys.src = n; 
-      ys.charset = 'utf-8'; 
-      document.head.appendChild(ys);
+      ys = document.createElement('script'); ys.async = 1; ys.src = n; ys.charset = 'utf-8'; document.head.appendChild(ys);
     })(window, 'Genesys', 'https://apps.usw2.pure.cloud/genesys-bootstrap/genesys.min.js', {
       environment: 'prod-usw2',
       deploymentId: 'e6fc05bd-1c02-40fc-b1fa-c1c3ab644d8d'
+    });
+
+    // 1. Subscribe to the "ready" event to ensure the widget is active
+    Genesys("subscribe", "Messaging.ready", function() {
+      console.log("Genesys Widget Ready");
+      
+      // 2. Parse the URL
+      const params = new URLSearchParams(window.location.search);
+      const cidValue = params.get('cid');
+
+      // 3. Send the command only if cid exists
+      if (cidValue) {
+        Genesys("command", "Database.set", {
+          messaging: {
+            customAttributes: {
+              cid: cidValue.trim()
+            }
+          }
+        });
+        console.log("Custom Attribute 'cid' sent: " + cidValue);
+      }
     });
   </script>
 </head>
 
 <body>
   <h1>Welcome to the Demo</h1>
-  <p>This is a dummy website to test your Genesys chat widget.</p>
+  <p>Your Genesys chat widget is loading below.</p>
+  <div class="status-box" id="url-status">Checking for CID...</div>
+
+  <script>
+    // Just for visual confirmation on your demo page
+    const urlParams = new URLSearchParams(window.location.search);
+    const displayCid = urlParams.get('cid') || 'None found in URL';
+    document.getElementById('url-status').innerText = "URL CID: " + displayCid;
+  </script>
 </body>
 </html>
