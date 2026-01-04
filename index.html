@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Chat Widget Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Styles -->
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+    }
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+    }
+    p {
+      font-size: 1.2rem;
+      max-width: 600px;
+    }
+  </style>
+
+  <!-- Genesys Chat Widget with dynamic cid -->
+  <script type="text/javascript">
+    // Function to read "cid" from URL query string
+    function getQueryParam(name) {
+      const params = new URLSearchParams(window.location.search);
+      return params.get(name);
+    }
+
+    const cid = getQueryParam('cid');
+
+    (function (g, e, n, es, ys) {
+      g['_genesysJs'] = e;
+      g[e] = g[e] || function () { (g[e].q = g[e].q || []).push(arguments) };
+      g[e].t = 1 * new Date();
+      g[e].c = es;
+
+      // Safely push the cid command into Genesys queue
+      if(cid) {
+        g[e]("command", "Database.set", {
+          messaging: { customAttributes: { cid: cid } }
+        });
+      }
+
+      ys = document.createElement('script'); 
+      ys.async = 1; 
+      ys.src = n; 
+      ys.charset = 'utf-8'; 
+      document.head.appendChild(ys);
+    })(window, 'Genesys', 'https://apps.usw2.pure.cloud/genesys-bootstrap/genesys.min.js', {
+      environment: 'prod-usw2',
+      deploymentId: 'd1ef177d-9dd4-44d4-b141-8d51e495f817'
+    });
+  </script>
+</head>
+
+<body>
+  <h1>Welcome to the Demo</h1>
+  <p>This is a dummy website to test your Genesys chat widget.</p>
+</body>
+</html>
