@@ -49,7 +49,9 @@
       // Safely push the cid command into Genesys queue
       if(cid) {
         g[e]("command", "Database.set", {
-          messaging: { customAttributes: { cid: cid } }
+          messaging: { customAttributes: { cid: cid },
+                      preEngagement: true
+                     }
         });
       }
 
